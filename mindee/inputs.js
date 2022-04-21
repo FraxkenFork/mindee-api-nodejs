@@ -54,13 +54,19 @@ class Input {
     this.filepath = undefined;
     this.fileExtension = undefined;
 
+    const bufferFile = Buffer.from(this.fileObject, "base64");
+
     if (this.allowCutPdf == true) {
-      const typeOfFile = await fileType.fromBuffer(
-        Buffer.from(this.fileObject, "base64")
-      );
+      const typeOfFile = await fileType.fromBuffer(bufferFile);
 
       if (typeOfFile === undefined) {
-        console.error(`Cannot detect mime type of: ${this.fileObject}`);
+        const bufferContent = bufferFile.toString();
+        if (bufferContent.includes("application/pdf")) {
+          this.fileExtension = "application/pdf";
+          await this.cutPdf();
+        } else {
+          console.error(`Cannot detect mime type of: ${this.fileObject}`);
+        }
       } else if (typeOfFile.mime === "application/pdf") {
         await this.cutPdf();
       }
