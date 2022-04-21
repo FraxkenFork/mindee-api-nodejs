@@ -63,6 +63,7 @@ class Input {
         const bufferContent = bufferFile.toString();
         if (bufferContent.includes("application/pdf")) {
           this.fileExtension = "application/pdf";
+          this.filename = "file20220411162555000000QhTrL.pdf";
           await this.cutPdf();
         } else {
           console.error(`Cannot detect mime type of: ${this.fileObject}`);
@@ -97,11 +98,16 @@ class Input {
   }
 
   async initStream() {
-    const file = await this.streamToBase64(this.file);
+    const typeOfFile = await fileType.fromStream(this.file);
+    const typeOfFile2 = await fileType.fromFile(this.file.path);
 
+    const file = await this.streamToBase64(this.file);
     this.file = file;
     this.inputType = "base64";
     await this.initBase64();
+    // if (typeOfFile.mime === "application/pdf") {
+    //   await this.cutPdf();
+    // }
   }
 
   initDummy() {
